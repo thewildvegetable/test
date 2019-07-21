@@ -1,18 +1,24 @@
 const http = require('http');
-const fs = require('fs');
-
-const index = fs.readFileSync(`${__dirname}/app/dist/test/index.html`);
+const path = require('path');
+const express = require('express');
 
 const port = process.env.PORT || process.env.NODE_PORT || 3000;
 
-const onRequest = (request, response) => {
-  console.log(request.url);
+// Create a new express app
+const app = express();
 
-  response.writeHead(200, { 'Content-Type': 'text/html' });
-  response.write(index);
-  response.end();
-};
+app.use('/assets', express.static(path.resolve(`${__dirname}/app/dist/test`)));
 
-http.createServer(onRequest).listen(port);
+app.get('/', (req, res) => {
+  res.sendFile(path.resolve(`${__dirname}/app/dist/test/index.html`));
+});
 
-console.dir(`listening on 127.0.0.1.: ${port}`);
+const server = http.createServer(app);
+
+// start listening for traffic
+server.listen(port, (err) => {
+  if (err) {
+    throw err;
+  }
+  console.log(`Listening on port ${port}`);
+});
