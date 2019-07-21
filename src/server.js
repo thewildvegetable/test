@@ -4,13 +4,27 @@ const express = require('express');
 
 const port = process.env.PORT || process.env.NODE_PORT || 3000;
 
+const allowedExt = [
+  '.js',
+  '.ico',
+  '.css',
+  '.png',
+  '.jpg',
+  '.woff2',
+  '.woff',
+  '.ttf',
+  '.svg',
+];
+
 // Create a new express app
 const app = express();
 
-app.use('/assets', express.static(path.resolve(`${__dirname}/app/dist/test`)));
-
 app.get('*', (req, res) => {
-  res.sendFile(path.resolve(`${__dirname}/app/dist/test/index.html`));
+  if (allowedExt.filter(ext => req.url.indexOf(ext) > 0).length > 0) {
+    res.sendFile(path.resolve(`${__dirname}/app/dist/test/${req.url}`));
+  } else {
+    res.sendFile(path.resolve(`${__dirname}/app/dist/test/index.html`));
+  }
 });
 
 const server = http.createServer(app);
